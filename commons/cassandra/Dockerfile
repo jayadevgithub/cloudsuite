@@ -22,9 +22,7 @@ RUN apt-get update                                                              
     && apt-get update                                                                  \
     && apt-get install -y oracle-java8-installer cassandra
 
-COPY files/* /scripts/
 
-COPY files/jvm.options.128_GB /etc/cassandra/jvm.options
 
 RUN echo "Add nf_conntrack to modules ...\n"\
     && echo "nf_conntrack" >> /etc/modules \
@@ -32,8 +30,6 @@ RUN echo "Add nf_conntrack to modules ...\n"\
     && echo "* soft nofile 1000000" >> /etc/security/limits.conf \
     && echo "* hard nofile 1000000" >> /etc/security/limits.conf
 
-RUN cp /scripts/set_sysctl.conf /etc/sysctl.conf
 
 ENV DEBIAN_FRONTEND teletype
 
-ENTRYPOINT ["/scripts/bootstrap.sh"]
