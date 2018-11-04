@@ -12,11 +12,12 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN mkdir /scripts && mkdir /cpython
 ADD $cpython_install /cpython
 
+COPY files/ /django-workload/
+
 RUN apt-get update
 RUN apt-get install -y git python3-virtualenv python3-dev  \
         python-pip libmemcached-dev zlib1g-dev netcat-openbsd
-RUN git clone https://github.com/Instagram/django-workload    \
-    && cd django-workload/django-workload                     \
+RUN cd /django-workload/django-workload                       \
     && python3 -m virtualenv -p /cpython/bin/python3  venv    \
     && ln -s config-"$python_version""$python_soabi"-"$platform_triplet" venv/lib/python"$python_version"/config-"$python_version""$python_soabi" \
     && ln -s libpython"$python_version""$python_soabi".a venv/lib/python"$python_version"/config-"$python_version""$python_soabi"/libpython"$python_version".a \
@@ -25,7 +26,7 @@ RUN git clone https://github.com/Instagram/django-workload    \
     && deactivate                                             \
     && cp cluster_settings_template.py cluster_settings.py
 
-COPY set_sysctl.conf uwsgi_init.sh /scripts/
+COPY files/set_sysctl.conf files/uwsgi_init.sh /scripts/
 RUN echo "Add nf_conntrack to modules ...\n"\
     && echo "nf_conntrack" >> /etc/modules \
     && echo "Add limits settings ...\n"\

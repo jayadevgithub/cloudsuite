@@ -22,15 +22,17 @@ change Xmn proportionally to the previous heap size (if changing heap size to
 
 
 ## Build the docker images
-To build cassandra image, go to the cloudsuite/commons/cassandra folder location, and run
-	docker build --no-cache -t cassandra-webtier .
 
-To build memcached image, go to the cloudsuite/commons/memcached folder location, and run
-	docker build --no-cache -t memcached-webtier .
+Before proceeding to the building the required images for django-workload using the build_containers.sh script, you must build the base images for cassandra and memcached using the commands specified below:
 
-To build uwsgi, graphite and siege images for the workload, run
+1. To build the cloudsuite/cassandra base image, go to the cloudsuite/commons/cassandra folder location, and run the following command:
+	$ docker build . -t cloudsuite/cassandra
 
-    [UWSGI_ONLY=1] ./build_containers.sh [/absolute/path/to/installed/python]
+2. To build the cloudsuite/memcached base image, go to the cloudsuite/commons/memcached folder location, and run the following command:
+	$ docker build . -t cloudsuite/memcached
+
+Now to build the uwsgi, graphite, cassandra, memcached and siege images specific to the django-workload, go to cloudsuite/benchmarks/django-workload/docker-scripts folder location and run the following command: 
+	$ [UWSGI_ONLY=1] ./build_containers.sh [/absolute/path/to/installed/python]
 
 Running the above script with no parameters will deploy the system Python 3.5.2
 on the uWSGI container. In order to deploy a custom Python build, please

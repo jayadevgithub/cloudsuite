@@ -23,7 +23,7 @@ echo "Memcached is up and running!"
 
 # Start cassandra container
 echo "Starting cassandra container"
-docker run -tid --privileged -h cassandra -e WORKLOAD=django --name cassandra_container           \
+docker run -tid --privileged -h cassandra --name cassandra_container           \
            --network django_network --ip 10.10.10.11 cassandra-webtier
 
 wait_port 10.10.10.11 9042 cassandra
