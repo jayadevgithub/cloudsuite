@@ -1,8 +1,29 @@
-# Docker containers setup files
+# Django workload by Instagram and Intel, v1.0 RC
 
-This directory contains all docker files and all necessary dependencies to
-build and deploy all the docker images necessary to run the Django
-Workload. Each entity (Cassandra, uWSGI, Memcached, Siege, Graphite) is set up
+This project aims to provide a Django workload based on a real-world
+large-scale production workload that serves mobile clients.
+
+## Setup for Docker Containers
+
+The workload can be deployed using Docker containers to gauge the impact of the Django
+workload on both Python and the hardware it runs on.
+
+Documentation to set up each component is provided each subdirectory. 
+You'll need to follow the **README.md** file in each of the
+following locations:
+
+* 3 services
+  * Cassandra - [cassandra/README.md](/benchmarks/django-workload/cassandra/README.md)
+  * Memcached - [memcached/README.md](/benchmarks/django-workload/memcached/README.md)
+  * Graphite (for monitoring) - [graphite/README.md](/benchmarks/django-workload/graphite/README.md)
+
+* Django and uWSGI server - [uwsgi/README.md](/benchmarks/django-workload/uwsgi/README.md)
+* Siege client (a load generator) - [siege/README.md](/benchmarks/django-workload/siege/README.md)
+
+
+The root directory contains sub directories for each of these components which contains 
+docker files and all necessary dependencies to build and deploy all the docker images necessary 
+to run the Django Workload. Each entity (Cassandra, uWSGI, Memcached, Siege, Graphite) is set up
 in a separate container.
 
 For instructions on how to install docker, please refer to:
@@ -11,7 +32,7 @@ For instructions on how to install docker, please refer to:
 ## Warning
 
 The Cassandra heap size is set to 64GB in
-[cloudsuite/commons/cassandra/files/jvm.options.128_GB](cloudsuite/commons/cassandra/files/jvm.options.128_GB).
+[cloudsuite/benchmarks/django-workload/cassandra/files/jvm.options.128_GB](/benchmarks/django-workload/cassandra/files/jvm.options.128_GB).
 If your machine does not have that much RAM, starting the Cassandra container
 will cause swapping, therefore your machine will become unresponsive.
 
@@ -19,33 +40,14 @@ Please change the value of the heap size in the file mentioned above to a more
 suitable value (change Xms and Xmx to half the system memory or less). Also
 change Xmn proportionally to the previous heap size (if changing heap size to
 1/4 its original value, also reduce Xmn to 1/4 its original value).
+*Example*: use on a system with 8GB memory
+```
+-Xms4G
+-Xmx4G
+-Xmn2G
+```
 
-
-## Build the docker images
-
-Before proceeding to the building the required images for django-workload using the build_containers.sh script, you must build the base images for cassandra and memcached using the commands specified below:
-
-1. To build the cloudsuite/cassandra base image, go to the cloudsuite/commons/cassandra folder location, and run the following command:
-	$ docker build . -t cloudsuite/cassandra
-
-2. To build the cloudsuite/memcached base image, go to the cloudsuite/commons/memcached folder location, and run the following command:
-	$ docker build . -t cloudsuite/memcached
-
-Now to build the uwsgi, graphite, cassandra, memcached and siege images specific to the django-workload, go to cloudsuite/benchmarks/django-workload/docker-scripts folder location and run the following command: 
-	$ [UWSGI_ONLY=1] ./build_containers.sh [/absolute/path/to/installed/python]
-
-Running the above script with no parameters will deploy the system Python 3.5.2
-on the uWSGI container. In order to deploy a custom Python build, please
-provide the script above with the absolute path to the install folder of your
-build
-
-    # CPython tree
-    ./configure --prefix=/python/install/folder
-    make
-    make install
-    # Docker scripts
-    ./build_containers.sh /python/install/folder
-
+# Note
 Please note that the latest Python version that was used to test the
 installation scripts was 3.6.3. Subsequent versions have not been tested. All
 the packages installed for Docker are the same as what would be installed on
@@ -64,31 +66,5 @@ this, in order to measure the performance of a different Python build, only
 the uWSGI image needs to be re-built. This is the only image that changes, as
 the Python used for the workload changes.
 
-In order to build only the uWSGI image, UWSGI_ONLY=1 must be specified before
-the build_containers.sh script:
-
-    # remember to remove the old container & image
-    ./cleanup_containers.sh
-    docker image rm uwsgi-webtier
-    UWSGI_ONLY=1 ./build_containers.sh /some/folder
-
-By default, docker commands will require root access. If using "sudo", remember
-to specify the "UWSGI_ONLY=1" variable __after__ the "sudo" word, otherwise it
-will not be taken into consideration.
-
 To run docker without "sudo", please follow the instructions here:
 <https://docs.docker.com/engine/installation/linux/linux-postinstall/>
-
-# Run the workload
-
-Simply run:
-
-    # default number of Siege workers is 185. This can be
-    # changed using the WORKERS environment variable
-    [WORKERS=185] ./run_containers.sh
-
-# Cleanup containers
-
-In order to do another run, the previous containers need to be removed:
-
-    ./cleanup_containers.sh
