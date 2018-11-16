@@ -5,7 +5,7 @@
 # on the amount of available memory. These settings work for a memory size of 128GB
 -Xms4G
 -Xmx4G
--Xmn2G
+-Xmn1G
 
 -XX:+HeapDumpOnOutOfMemoryError
 -Xss256k

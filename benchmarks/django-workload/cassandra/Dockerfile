@@ -2,7 +2,7 @@ FROM cloudsuite/cassandra
 
 
 COPY files/* /scripts/
-COPY files/jvm.options.128_GB /etc/cassandra/jvm.options
+COPY files/jvm.options /etc/cassandra/jvm.options
 
 
 RUN cp /scripts/set_sysctl.conf /etc/sysctl.conf
